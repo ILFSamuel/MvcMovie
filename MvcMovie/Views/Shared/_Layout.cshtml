@@ -1,49 +1,108 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="it" data-bs-theme="light">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Movie App</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <title>@ViewData["Title"] - MvcMovie</title>
+
+    <!-- Applica il tema salvato prima del rendering, per evitare il "flash" bianco -->
+    <script>
+            (function () {
+                try {
+                    var t = localStorage.getItem("theme");
+                    if (t) document.documentElement.setAttribute("data-bs-theme", t);
+                } catch (e) { }
+            })();
+    </script>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MvcMovie.styles.css" asp-append-version="true" />
+
+    @await RenderSectionAsync("Styles", required: false)
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
+
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom shadow-sm">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="HelloWorld" asp-action="Index">Movie App</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">MvcMovie</a>
+
+                <button class="navbar-toggler" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#mainNav"
+                        aria-controls="mainNav" aria-expanded="false" aria-label="Apri/chiudi menu">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                    </ul>
+
+                    <ul class="navbar-nav align-items-lg-center gap-2">
+                        <li class="nav-item">
+                            <button id="themeToggle" type="button"
+                                    class="btn btn-outline-light btn-sm"
+                                    aria-label="Cambia tema">
+                                🌙 Tema
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary btn-sm" href="#">Accedi</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - Movie App - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <main role="main" class="container flex-grow-1 py-4">
+        @RenderBody()
+    </main>
+
+    <footer class="bg-body-tertiary border-top py-3 mt-auto">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center text-body-secondary small">
+            <span>&copy; @DateTime.Now.Year - MvcMovie</span>
+            <a asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+
+    <!-- Pulsante "torna su" -->
+    <button id="backToTop" type="button"
+            class="btn btn-primary rounded-circle shadow position-fixed bottom-0 end-0 m-3 d-none"
+            style="width:48px;height:48px;z-index:1030"
+            aria-label="Torna su">
+        ↑
+    </button>
+
+    <!-- Contenitore dei toast -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer" style="z-index:1090"></div>
+
+    <!-- Modale di conferma riutilizzabile -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalTitle">Conferma</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+                </div>
+                <div class="modal-body" id="confirmModalBody">Sei sicuro?</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="button" class="btn btn-danger" id="confirmModalOk">Conferma</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
